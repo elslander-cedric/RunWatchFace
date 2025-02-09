@@ -1,11 +1,16 @@
 import Toybox.Time;
 import Toybox.UserProfile;
+import Toybox.System;
 
 class ActivityTotals {
 
     static var weekDistance = 0.00;
     static var monthDistance = 0.00;
     static var yearDistance = 0.00;
+
+    static var lastRunDistance = null;
+    static var lastRunDuration = null;
+    static var lastRunTime = null;
 
     static var yearGoal = 1000.00;
 
@@ -26,9 +31,9 @@ class ActivityTotals {
 
     public static function update() {
         // reset totals 
-        weekDistance = 14.00;
-        monthDistance = 46.00;
-        yearDistance = 282.00;
+        weekDistance = 0.00;
+        monthDistance = 0.00;
+        yearDistance = 0.00;
 
         var now = new Time.Moment(Time.now().value());        
         var info = Gregorian.info(now, Time.FORMAT_SHORT);
@@ -48,7 +53,8 @@ class ActivityTotals {
                     var distance = userActivity.distance / 1000.00;
                     yearDistance += distance;
 
-                    var activityWeekNumber = iso_week_number(activityYear, activityInfo.month, activityInfo.day);
+                    var activityWeekNumber = iso_week_number(activityYear, activityInfo.month, activityInfo.day-1);
+
                     if(activityWeekNumber == currentWeekNumber) {
                         weekDistance += distance;
                     }
@@ -56,7 +62,13 @@ class ActivityTotals {
                     var activityMonth = activityInfo.month;
                     if(activityMonth == currentMonth) {
                         monthDistance += distance;
-                    }            
+                    }
+
+                    if(lastRunTime == null || userActivity.startTime.greaterThan(lastRunTime)) {
+                        lastRunDistance = distance;
+                        lastRunDuration = userActivity.duration.value();
+                        lastRunTime = userActivity.startTime;
+                    }
                 }
             }
 
@@ -64,9 +76,11 @@ class ActivityTotals {
         }
 
         // TEST DATA
-        // weekDistance = 18.00;
-        // monthDistance = 88.00;
-        // yearDistance = 188.00;
+        // weekDistance = 25.60;
+        // monthDistance = 101.20;
+        // yearDistance = 1002.40;
+        // lastRunDistance = 13.45;
+        // lastRunDuration = 41 * 60;
     }
 
     private static function julian_day(year, month, day)

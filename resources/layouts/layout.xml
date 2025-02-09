@@ -5,11 +5,11 @@
     <label id="hour" font="Graphics.FONT_SYSTEM_NUMBER_MEDIUM" justification="Graphics.TEXT_JUSTIFY_RIGHT" color="Graphics.COLOR_YELLOW" />
     <label id="min" font="Graphics.FONT_SYSTEM_NUMBER_MEDIUM" justification="Graphics.TEXT_JUSTIFY_LEFT" color="Graphics.COLOR_WHITE" />
         
-    <label id="distance_week" font="Graphics.FONT_SYSTEM_TINY" justification="Graphics.TEXT_JUSTIFY_CENTER" color="Graphics.COLOR_YELLOW"/>
-    <label id="distance_month" font="Graphics.FONT_SYSTEM_TINY" justification="Graphics.TEXT_JUSTIFY_CENTER" color="Graphics.COLOR_YELLOW"/>
-    <label id="distance_year" font="Graphics.FONT_SYSTEM_TINY" justification="Graphics.TEXT_JUSTIFY_CENTER" color="Graphics.COLOR_YELLOW"/>
+    <label id="activity_left" font="Graphics.FONT_SYSTEM_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER"/>
+    <label id="activity_middle" font="Graphics.FONT_SYSTEM_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER"/>
+    <label id="activity_right" font="Graphics.FONT_SYSTEM_XTINY" justification="Graphics.TEXT_JUSTIFY_CENTER"/>
     
-    <label id="distance" x="center" y="158" font="Graphics.FONT_SYSTEM_SMALL" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+    <label id="distance_status" x="center" y="158" font="Graphics.FONT_SYSTEM_SMALL" justification="Graphics.TEXT_JUSTIFY_CENTER" />
     
     <drawable id="progress_year" class="Progress">
         <param name="type">"year"</param>
