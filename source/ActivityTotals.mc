@@ -3,7 +3,6 @@ import Toybox.UserProfile;
 import Toybox.System;
 
 class ActivityTotals {
-
     static var weekDistance = 0.00;
     static var monthDistance = 0.00;
     static var yearDistance = 0.00;
@@ -13,6 +12,8 @@ class ActivityTotals {
     static var lastRunTime = null;
 
     static var yearGoal = 1000.00;
+
+    private static var userActivityIterator = null;
 
     public static function getCurrentDistance() {
         var now = new Time.Moment(Time.now().value());        
@@ -30,11 +31,6 @@ class ActivityTotals {
     }
 
     public static function update() {
-        // reset totals 
-        weekDistance = 0.00;
-        monthDistance = 0.00;
-        yearDistance = 0.00;
-
         var now = new Time.Moment(Time.now().value());        
         var info = Gregorian.info(now, Time.FORMAT_SHORT);
         var currentWeekNumber = iso_week_number(info.year, info.month, info.day);
@@ -42,7 +38,10 @@ class ActivityTotals {
         var currentYear = info.year;
 
         // Get run activities
-        var userActivityIterator = UserProfile.getUserActivityHistory();
+        if(userActivityIterator == null) {
+            userActivityIterator = UserProfile.getUserActivityHistory();
+        }
+        
         var userActivity = userActivityIterator.next();
         while (userActivity != null) {
             if(userActivity.type == 1) {
