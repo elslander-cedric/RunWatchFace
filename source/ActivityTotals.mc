@@ -15,27 +15,14 @@ class ActivityTotals {
 
     private static var userActivityIterator = null;
 
-    public static function getCurrentDistance() {
-        var now = new Time.Moment(Time.now().value());        
-        var info = Gregorian.info(now, Time.FORMAT_SHORT);
-
-        var beginOfYear = Gregorian.moment({
-            :year   => info.year,
-            :month  => 1,
-            :day    => 1,
-            :hour   => 0,
-            :minute => 0
-        });
-
-        return yearDistance - ((((now.value() - beginOfYear.value()) / 3600) / (365.00 * 24)) * yearGoal);
-    }
-
     public static function update() {
-        var now = new Time.Moment(Time.now().value());        
-        var info = Gregorian.info(now, Time.FORMAT_SHORT);
-        var currentWeekNumber = iso_week_number(info.year, info.month, info.day);
-        var currentMonth = info.month;
-        var currentYear = info.year;
+        // TEST DATA
+        // weekDistance = 25.60;
+        // monthDistance = 101.20;
+        // yearDistance = 1002.40;
+        // lastRunDistance = 13.45;
+        // lastRunDuration = 41 * 60;
+        // return;
 
         // Get run activities
         if(userActivityIterator == null) {
@@ -43,6 +30,17 @@ class ActivityTotals {
         }
         
         var userActivity = userActivityIterator.next();
+
+        if(userActivity == null) {
+            return;
+        }
+
+        var now = new Time.Moment(Time.now().value());        
+        var info = Gregorian.info(now, Time.FORMAT_SHORT);
+        var currentWeekNumber = iso_week_number(info.year, info.month, info.day);
+        var currentMonth = info.month;
+        var currentYear = info.year;
+
         while (userActivity != null) {
             if(userActivity.type == 1) {
                 var activityInfo = Gregorian.info(userActivity.startTime, Time.FORMAT_SHORT);                
@@ -73,13 +71,6 @@ class ActivityTotals {
 
             userActivity = userActivityIterator.next();
         }
-
-        // TEST DATA
-        // weekDistance = 25.60;
-        // monthDistance = 101.20;
-        // yearDistance = 1002.40;
-        // lastRunDistance = 13.45;
-        // lastRunDuration = 41 * 60;
     }
 
     private static function julian_day(year, month, day)

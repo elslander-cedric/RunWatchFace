@@ -128,16 +128,15 @@ class RunWatchFaceView extends WatchUi.WatchFace {
     }
 
     function displayLastRun() {
+        if(ActivityTotals.lastRunTime == null) {
+            return;
+        }
+
         var runTotalMinutes = ActivityTotals.lastRunDuration/60;
         var runHour = runTotalMinutes/60;
         var runMinutes = runTotalMinutes.toNumber() % 60;
 
-        var speed = 0;
-
-        if(ActivityTotals.lastRunDuration != null && ActivityTotals.lastRunDistance != null) {
-            speed = ActivityTotals.lastRunDuration/ActivityTotals.lastRunDistance;
-        }
-        
+        var speed = ActivityTotals.lastRunDuration/ActivityTotals.lastRunDistance;        
         var speedMinutes = speed/60;
         var speedSeconds = speed.toNumber() % 60;
 
@@ -145,6 +144,29 @@ class RunWatchFaceView extends WatchUi.WatchFace {
         middleLabel.setText(speedMinutes.format(TIME_FORMAT) + ":" + speedSeconds.format(TIME_FORMAT));
         rightLabel.setText(runHour.format(TIME_FORMAT) + ":" + runMinutes.format(TIME_FORMAT));
         setColor([leftLabel, middleLabel, rightLabel], Graphics.COLOR_YELLOW);
+    }
+
+    function displayDistance() {
+        var now = new Time.Moment(Time.now().value());        
+        var info = Gregorian.info(now, Time.FORMAT_SHORT);
+
+        var beginOfYear = Gregorian.moment({
+            :year   => info.year,
+            :month  => 1,
+            :day    => 1,
+            :hour   => 0,
+            :minute => 0
+        });
+
+        var distance = ActivityTotals.yearDistance - ((((now.value() - beginOfYear.value()) / 3600) / (365.00 * 24)) * ActivityTotals.yearGoal);
+
+        if(distance < 0) {
+            distance *= -1;
+            distanceLabel.setColor(Graphics.COLOR_RED);
+        } else {
+            distanceLabel.setColor(Graphics.COLOR_GREEN);
+        }
+        distanceLabel.setText(distance.format(DEC_FORMAT));
     }
 
     function switchDisplayMode() {
@@ -162,17 +184,6 @@ class RunWatchFaceView extends WatchUi.WatchFace {
                 displayMode = PROGRESS_DONE;
                 break;
         }
-    }
-
-    function displayDistance() {
-        var distance = ActivityTotals.getCurrentDistance();
-        if(distance < 0) {
-            distance *= -1;
-            distanceLabel.setColor(Graphics.COLOR_RED);
-        } else {
-            distanceLabel.setColor(Graphics.COLOR_GREEN);
-        }
-        distanceLabel.setText(distance.format(DEC_FORMAT));
     }
 
     function setColor(labels as Array<Text>, color as Number) {
