@@ -106,9 +106,9 @@ class RunWatchFaceView extends WatchUi.WatchFace {
     }
 
     function displayProgressTodo() {
-        var week = (ActivityTotals.yearGoal/52) - ActivityTotals.weekDistance;
-        var month = (ActivityTotals.yearGoal/12) - ActivityTotals.monthDistance;
-        var year = ActivityTotals.yearGoal - ActivityTotals.yearDistance;
+        var week = (ActivityTotals.YEAR_GOAL/52) - ActivityTotals.weekDistance;
+        var month = (ActivityTotals.YEAR_GOAL/12) - ActivityTotals.monthDistance;
+        var year = ActivityTotals.YEAR_GOAL - ActivityTotals.yearDistance;
 
         if(week < 0) { week = 0; }
         if(month < 0) { month = 0; }
@@ -158,7 +158,7 @@ class RunWatchFaceView extends WatchUi.WatchFace {
             :minute => 0
         });
 
-        var distance = ActivityTotals.yearDistance - ((((now.value() - beginOfYear.value()) / 3600) / (365.00 * 24)) * ActivityTotals.yearGoal);
+        var distance = ActivityTotals.yearDistance - ((((now.value() - beginOfYear.value()) / 3600) / (365.00 * 24)) * ActivityTotals.YEAR_GOAL);
 
         if(distance < 0) {
             distance *= -1;

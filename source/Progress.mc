@@ -20,11 +20,11 @@ class Progress extends WatchUi.Drawable {
         var progress = 0;
 
         if(_type.equals("year")) {
-            progress = ActivityTotals.yearDistance / ActivityTotals.yearGoal;
+            progress = ActivityTotals.yearDistance / ActivityTotals.YEAR_GOAL;
         } else if(_type.equals("month")) {
-            progress = ActivityTotals.monthDistance / (ActivityTotals.yearGoal/12);
+            progress = ActivityTotals.monthDistance / (ActivityTotals.YEAR_GOAL/12);
         } else if(_type.equals("week")) {
-            progress = ActivityTotals.weekDistance / (ActivityTotals.yearGoal/52);
+            progress = ActivityTotals.weekDistance / (ActivityTotals.YEAR_GOAL/52);
         }
 
         drawProgress(dc, progress);
