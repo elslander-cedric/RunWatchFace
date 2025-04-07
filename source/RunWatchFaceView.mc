@@ -6,19 +6,13 @@ import Toybox.Time;
 
 class RunWatchFaceView extends WatchUi.WatchFace {
 
-    enum {
-        LAST_RUN,
-        PROGRESS_DONE,
-        PROGRESS_TODO
-    }
-
-    private var displayMode = PROGRESS_DONE;
-
     // Labels
-    private var dateLabel, hourLabel, minLabel, leftLabel, middleLabel, rightLabel, distanceLabel;
+    private var
+        dateLabel,
+        hourLabel, minLabel,
+        distanceLabel;
 
     private static const TIME_FORMAT = "%02d";
-    private static const INT_FORMAT = "%.0f";
     private static const DEC_FORMAT = "%.1f";
 
     function initialize() {
@@ -31,29 +25,18 @@ class RunWatchFaceView extends WatchUi.WatchFace {
 
         var width = dc.getWidth();
         var height = dc.getHeight();
+
         var centerX = width/2;
         var centerY = height/2;
-        var timeY = centerY-40;
-        var activityY = (height*2/3)-5;
-
-        // Date
+        
         dateLabel = View.findDrawableById("date") as Text;
+        dateLabel.setLocation(centerX+4, 137);
 
-        // Time
         hourLabel = View.findDrawableById("hour") as Text;
-        hourLabel.setLocation(centerX-4, timeY);        
+        hourLabel.setLocation(centerX-4, centerY);        
         minLabel = View.findDrawableById("min") as Text;
-        minLabel.setLocation(centerX+4, timeY);
-
-        // Activities
-        leftLabel = View.findDrawableById("activity_left") as Text;
-        leftLabel.setLocation((width/4)+7, activityY);
-        middleLabel = View.findDrawableById("activity_middle") as Text;
-        middleLabel.setLocation(centerX, activityY);
-        rightLabel = View.findDrawableById("activity_right") as Text;
-        rightLabel.setLocation((width*3/4)-7, activityY);
-
-        distanceLabel = View.findDrawableById("distance_status") as Text;
+        minLabel.setLocation(centerX+4, 95);        
+        distanceLabel = View.findDrawableById("distance_status") as Text;       
     }
 
     // Called when this View is brought to the foreground. Restore
@@ -64,91 +47,15 @@ class RunWatchFaceView extends WatchUi.WatchFace {
 
     // Update the view
     function onUpdate(dc as Dc) as Void {
-        // DATE & TIME
-        displayDateTime();
-
-        // ACTIVITIES
-        displayActivities();
-
-        // Call the parent onUpdate function to redraw the layout
-        View.onUpdate(dc);
-    }
-
-    function displayDateTime() {
+        ActivityTotals.update();
+        
         var now = new Time.Moment(Time.now().value());        
         var info = Gregorian.info(now, Time.FORMAT_MEDIUM);
 
-        dateLabel.setText(Lang.format("$1$ $2$ $3$", [info.day_of_week.toString().toUpper(), info.day, info.month.toString().toUpper()]));
+        dateLabel.setText(Lang.format("$1$ $2$", [info.day_of_week.toUpper(), info.day]));
+
         hourLabel.setText(info.hour.format(TIME_FORMAT));
         minLabel.setText(info.min.format(TIME_FORMAT));
-    }
-
-    function displayActivities() {
-        ActivityTotals.update();
-
-        switch (displayMode) {
-            case LAST_RUN:
-                displayLastRun();
-                break;
-            case PROGRESS_DONE:
-                displayProgressDone();
-                break;
-            case PROGRESS_TODO:
-                displayProgressTodo();
-                break;
-            default:
-                displayProgressDone();
-                break;
-        }
-
-        switchDisplayMode();        
-        displayDistance();
-    }
-
-    function displayProgressTodo() {
-        var week = (ActivityTotals.YEAR_GOAL/52) - ActivityTotals.weekDistance;
-        var month = (ActivityTotals.YEAR_GOAL/12) - ActivityTotals.monthDistance;
-        var year = ActivityTotals.YEAR_GOAL - ActivityTotals.yearDistance;
-
-        if(week < 0) { week = 0; }
-        if(month < 0) { month = 0; }
-        if(year < 0) { year = 0; }
-
-        leftLabel.setText(week.format(DEC_FORMAT));
-        middleLabel.setText(month.format(DEC_FORMAT));
-        rightLabel.setText(year.format(INT_FORMAT));
-        setColor([leftLabel, middleLabel, rightLabel], Graphics.COLOR_RED);
-    }
-
-    function displayProgressDone() {
-        leftLabel.setText(ActivityTotals.weekDistance.format(DEC_FORMAT));
-        middleLabel.setText(ActivityTotals.monthDistance.format(DEC_FORMAT));
-        rightLabel.setText(ActivityTotals.yearDistance.format(INT_FORMAT));
-        setColor([leftLabel, middleLabel, rightLabel], Graphics.COLOR_GREEN);
-    }
-
-    function displayLastRun() {
-        if(ActivityTotals.lastRunTime == null) {
-            return;
-        }
-
-        var runTotalMinutes = ActivityTotals.lastRunDuration/60;
-        var runHour = runTotalMinutes/60;
-        var runMinutes = runTotalMinutes.toNumber() % 60;
-
-        var speed = ActivityTotals.lastRunDuration/ActivityTotals.lastRunDistance;        
-        var speedMinutes = speed/60;
-        var speedSeconds = speed.toNumber() % 60;
-
-        leftLabel.setText(ActivityTotals.lastRunDistance.format(DEC_FORMAT));
-        middleLabel.setText(speedMinutes.format(TIME_FORMAT) + ":" + speedSeconds.format(TIME_FORMAT));
-        rightLabel.setText(runHour.format(TIME_FORMAT) + ":" + runMinutes.format(TIME_FORMAT));
-        setColor([leftLabel, middleLabel, rightLabel], Graphics.COLOR_YELLOW);
-    }
-
-    function displayDistance() {
-        var now = new Time.Moment(Time.now().value());        
-        var info = Gregorian.info(now, Time.FORMAT_SHORT);
 
         var beginOfYear = Gregorian.moment({
             :year   => info.year,
@@ -167,29 +74,9 @@ class RunWatchFaceView extends WatchUi.WatchFace {
             distanceLabel.setColor(Graphics.COLOR_GREEN);
         }
         distanceLabel.setText(distance.format(DEC_FORMAT));
-    }
 
-    function switchDisplayMode() {
-        switch (displayMode) {
-            case LAST_RUN:
-                displayMode = PROGRESS_DONE;
-                break;
-            case PROGRESS_DONE:
-                displayMode = PROGRESS_TODO;
-                break;
-            case PROGRESS_TODO:
-                displayMode = LAST_RUN;
-                break;
-            default:
-                displayMode = PROGRESS_DONE;
-                break;
-        }
-    }
-
-    function setColor(labels as Array<Text>, color as Number) {
-        for(var i = 0; i < labels.size(); i++) {
-            labels[i].setColor(color);
-        }
+        // Call the parent onUpdate function to redraw the layout
+        View.onUpdate(dc);
     }
 
     // Called when this View is removed from the screen. Save the

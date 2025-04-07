@@ -5,17 +5,18 @@ import Toybox.Lang;
 import Toybox.System;
 import Toybox.Math;
 
-class Battery extends WatchUi.Drawable {    
-
-    private const x1=92, y1=30, w1=24, h1=14; // outer rectangle
-    private const x2=x1+w1, y2=y1 + (h1*3/8), w2=w1/10, h2=(h1/4)+3; // little rectangle on the right side
-    private const x3=x1+2, y3=y1+2, w3=w1-4, h3=h1-4; // fill rectangle
+class Battery extends WatchUi.Drawable {
 
     function initialize(params as Dictionary) {
         Drawable.initialize(params);
     }
     
     function draw(dc as Dc) as Void {
+        var w1=24, h1=14;
+        var x1=dc.getWidth()/2 - (w1/2), y1=30; // outer rectangle
+        var x2=x1+w1, y2=y1 + (h1*3/8), w2=w1/10, h2=(h1/4)+3; // little rectangle on the right side
+        var x3=x1+2, y3=y1+2, w3=w1-4, h3=h1-4; // fill rectangle
+
         var batteryLevel = System.getSystemStats().battery / 100;
         // FOR TESTING
         // batteryLevel = 0.1;
